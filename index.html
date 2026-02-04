@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Strategy: 2D vs 3D Learning Prototype</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+                "gsap": "https://cdn.skypack.dev/gsap"
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <h1>Chess Academy</h1>
+            <p>Master moves and challenge the AI!</p>
+            <nav class="main-tabs">
+                <button id="tab-learn" class="tab-btn active">🎓 Learning</button>
+                <button id="tab-compete" class="tab-btn">⚔️ Compete</button>
+            </nav>
+        </header>
+
+        <main id="learn-view">
+            <div class="strategy-selector" id="strategy-list">
+                <!-- Strategy chips injected here -->
+            </div>
+            <div class="view-grid">
+                <div id="view-container">
+                    <div class="chess-board" id="svg-board-learn"></div>
+                </div>
+                <div class="controls">
+                    <div class="strategy-info">
+                        <h2 id="strategy-name">Scholar's Mate</h2>
+                        <p id="strategy-desc">The fastest way to win for White! It attacks the weak f7 square using the
+                            Queen and Bishop.</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="play-animation" class="primary-btn">Play Animation</button>
+                        <button id="reset-animation" class="secondary-btn">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <main id="compete-view" class="hidden">
+            <div class="view-grid">
+                <div id="view-container">
+                    <div class="chess-board" id="svg-board-compete"></div>
+                </div>
+                <div class="controls">
+                    <div class="game-info strategy-info">
+                        <h2>vs. AI (Level 1)</h2>
+                        <p id="game-status">Press Start to begin your game!</p>
+                        <div class="difficulty-control">
+                            <label>AI Level:</label>
+                            <input type="range" id="ai-level" min="1" max="10" value="1">
+                            <span id="level-val">1</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="start-game" class="primary-btn">Start New Game</button>
+                        <button id="undo-move" class="secondary-btn">Undo</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Built for Learning • Premium Interactive Experience</p>
+        </footer>
+    </div>
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
