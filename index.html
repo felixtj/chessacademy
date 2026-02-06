@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess Academy | Master Your Moves</title>
     <meta name="description"
-        content="Master chess strategies with our interactive 2D vs 3D learning prototype. Challenge the AI and improve your game.">
+        content="Master chess strategies with our interactive 2D vs 3D learning prototype. Challenge the computer and improve your game.">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://chessacademy.pages.dev/">
     <meta property="og:title" content="Chess Academy | Master Your Moves">
     <meta property="og:description"
-        content="Master chess strategies with our interactive 2D vs 3D learning prototype. Challenge the AI and improve your game.">
+        content="Master chess strategies with our interactive 2D vs 3D learning prototype. Challenge the computer and improve your game.">
     <meta property="og:image" content="og-image.png">
 
     <!-- Twitter -->
@@ -21,13 +21,13 @@
     <meta property="twitter:url" content="https://chessacademy.pages.dev/">
     <meta property="twitter:title" content="Chess Academy | Master Your Moves">
     <meta property="twitter:description"
-        content="Master chess strategies with our interactive 2D vs 3D learning prototype. Challenge the AI and improve your game.">
+        content="Master chess strategies with our interactive 2D vs 3D learning prototype. Challenge the computer and improve your game.">
     <meta property="twitter:image" content="og-image.png">
 
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <script type="importmap">
         {
             "imports": {
@@ -44,7 +44,7 @@
     <div id="app">
         <header>
             <h1>Chess Academy</h1>
-            <p>Master moves and challenge the AI!</p>
+            <p>Master moves and challenge the computer!</p>
             <nav class="main-tabs">
                 <button id="tab-learn" class="tab-btn active">🎓 Learning</button>
                 <button id="tab-compete" class="tab-btn">⚔️ Compete</button>
@@ -80,10 +80,10 @@
                 </div>
                 <div class="controls">
                     <div class="game-info strategy-info">
-                        <h2>vs. AI (Level 1)</h2>
-                        <p id="game-status">Press Start to begin your game!</p>
+                        <h2>vs. Computer (Level 1)</h2>
+                        <p id="game-status" class="prestart-note">Ready to Play? You are White. Press Start New Game to begin.</p>
                         <div class="difficulty-control">
-                            <label>AI Level:</label>
+                            <label>Computer Level:</label>
                             <input type="range" id="ai-level" min="1" max="10" value="1">
                             <span id="level-val">1</span>
                         </div>

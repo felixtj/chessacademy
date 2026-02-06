@@ -151,6 +151,10 @@ main {
     height: 100%;
 }
 
+#view-container {
+    position: relative;
+}
+
 /* 2D Board Styling */
 .chess-board {
     width: 600px;
@@ -165,6 +169,16 @@ main {
     grid-template-rows: repeat(8, 1fr);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    touch-action: none;
+}
+
+.prestart-note {
+    background: #ecfeff;
+    color: #0f766e;
+    border: 1px solid #99f6e4;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
 }
 
 .square {
@@ -195,14 +209,27 @@ main {
     align-items: center;
     justify-content: center;
     font-size: 3.5rem;
+    font-family: 'Noto Sans Symbols 2', 'Segoe UI Symbol', 'Apple Symbols', sans-serif;
+    font-weight: 400;
     cursor: grab;
     transition: transform 0.2s;
     user-select: none;
     line-height: 1;
+    -webkit-user-drag: none;
 }
 
 .piece:hover {
     transform: scale(1.1);
+}
+
+.piece.drag-ghost {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    pointer-events: none;
+    cursor: grabbing;
 }
 
 .hint {
@@ -353,7 +380,113 @@ footer {
 }
 
 @media (max-width: 900px) {
-    main {
+    .view-grid {
         grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    #view-container {
+        padding: 1.25rem;
+    }
+
+    .controls {
+        gap: 1rem;
+    }
+
+    .strategy-info {
+        padding: 1.5rem;
+        border-radius: 24px;
+    }
+
+    .strategy-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .strategy-info p {
+        font-size: 1rem;
+    }
+
+    .chess-board {
+        width: min(86vw, 560px);
+        height: min(86vw, 560px);
+        border-width: 10px;
+    }
+
+    .piece {
+        font-size: clamp(2rem, 7vw, 3.2rem);
+    }
+
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    button.primary-btn {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 700px) {
+    #app {
+        padding: 1rem;
+        gap: 1.25rem;
+    }
+
+    header h1 {
+        font-size: 2.25rem;
+    }
+
+    header p {
+        font-size: 1rem;
+    }
+
+    .main-tabs {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tab-btn {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        font-size: 1rem;
+    }
+
+    #view-container {
+        padding: 0.75rem;
+        border-radius: 20px;
+    }
+
+    .chess-board {
+        width: min(94vw, 520px);
+        height: min(94vw, 520px);
+        border-width: 8px;
+    }
+
+    .strategy-chip {
+        padding: 0.5rem 0.9rem;
+        font-size: 0.92rem;
+    }
+
+    button.primary-btn,
+    button.secondary-btn {
+        padding: 0.95rem;
+        border-radius: 14px;
+        font-size: 1rem;
+    }
+
+    .prestart-note {
+        font-size: 0.95rem;
+        line-height: 1.45;
+    }
+}
+
+@media (max-width: 420px) {
+    .chess-board {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+
+    .piece {
+        font-size: clamp(1.6rem, 9vw, 2.5rem);
     }
 }

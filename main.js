@@ -36,6 +36,79 @@ const STRATEGIES = {
             { piece: 'p', color: 'b', from: [4, 6], to: [4, 4] },
             { piece: 'R', color: 'w', from: [0, 0], to: [0, 7], capture: true }
         ]
+    },
+    italianGame: {
+        name: "Italian Game",
+        desc: "A classic opening: control the center, develop quickly, and pressure f7 with the Bishop.",
+        moves: [
+            { piece: 'P', color: 'w', from: [4, 1], to: [4, 3] },
+            { piece: 'p', color: 'b', from: [4, 6], to: [4, 4] },
+            { piece: 'N', color: 'w', from: [6, 0], to: [5, 2] },
+            { piece: 'n', color: 'b', from: [1, 7], to: [2, 5] },
+            { piece: 'B', color: 'w', from: [5, 0], to: [2, 3] },
+            { piece: 'b', color: 'b', from: [5, 7], to: [2, 4] }
+        ]
+    },
+    ruyLopez: {
+        name: "Ruy Lopez",
+        desc: "White develops naturally and pins the knight on c6 to pressure Black's center.",
+        moves: [
+            { piece: 'P', color: 'w', from: [4, 1], to: [4, 3] },
+            { piece: 'p', color: 'b', from: [4, 6], to: [4, 4] },
+            { piece: 'N', color: 'w', from: [6, 0], to: [5, 2] },
+            { piece: 'n', color: 'b', from: [1, 7], to: [2, 5] },
+            { piece: 'B', color: 'w', from: [5, 0], to: [1, 4] },
+            { piece: 'p', color: 'b', from: [0, 6], to: [0, 5] }
+        ]
+    },
+    queensGambit: {
+        name: "Queen's Gambit",
+        desc: "White offers the c-pawn to challenge the center and gain long-term space.",
+        moves: [
+            { piece: 'P', color: 'w', from: [3, 1], to: [3, 3] },
+            { piece: 'p', color: 'b', from: [3, 6], to: [3, 4] },
+            { piece: 'P', color: 'w', from: [2, 1], to: [2, 3] },
+            { piece: 'p', color: 'b', from: [4, 6], to: [4, 5] },
+            { piece: 'N', color: 'w', from: [1, 0], to: [2, 2] }
+        ]
+    },
+    sicilianDefense: {
+        name: "Sicilian Defense",
+        desc: "Black counters e4 with c5, creating an imbalanced and aggressive position.",
+        moves: [
+            { piece: 'P', color: 'w', from: [4, 1], to: [4, 3] },
+            { piece: 'p', color: 'b', from: [2, 6], to: [2, 4] },
+            { piece: 'N', color: 'w', from: [6, 0], to: [5, 2] },
+            { piece: 'p', color: 'b', from: [3, 6], to: [3, 5] },
+            { piece: 'P', color: 'w', from: [3, 1], to: [3, 3] },
+            { piece: 'p', color: 'b', from: [2, 4], to: [3, 3], capture: true }
+        ]
+    },
+    londonSystem: {
+        name: "London System",
+        desc: "A reliable setup: d4, Bf4, and e3 gives White a solid structure and easy development.",
+        moves: [
+            { piece: 'P', color: 'w', from: [3, 1], to: [3, 3] },
+            { piece: 'p', color: 'b', from: [3, 6], to: [3, 5] },
+            { piece: 'B', color: 'w', from: [2, 0], to: [5, 3] },
+            { piece: 'n', color: 'b', from: [6, 7], to: [5, 5] },
+            { piece: 'P', color: 'w', from: [4, 1], to: [4, 2] },
+            { piece: 'p', color: 'b', from: [4, 6], to: [4, 5] }
+        ]
+    },
+    kingsideCastle: {
+        name: "Kingside Castling Setup",
+        desc: "A quick example showing how to prepare and castle safely on the kingside.",
+        moves: [
+            { piece: 'P', color: 'w', from: [4, 1], to: [4, 3] },
+            { piece: 'p', color: 'b', from: [4, 6], to: [4, 4] },
+            { piece: 'N', color: 'w', from: [6, 0], to: [5, 2] },
+            { piece: 'n', color: 'b', from: [1, 7], to: [2, 5] },
+            { piece: 'B', color: 'w', from: [5, 0], to: [2, 3] },
+            { piece: 'b', color: 'b', from: [5, 7], to: [2, 4] },
+            { piece: 'K', color: 'w', from: [4, 0], to: [6, 0] },
+            { piece: 'R', color: 'w', from: [7, 0], to: [5, 0] }
+        ]
     }
 };
 
@@ -62,6 +135,13 @@ let isAnimating = false;
 let game = null;
 let stockfish = null;
 let selectedSquare = null;
+let competeStarted = false;
+
+function setPrestartStatus() {
+    const status = document.getElementById('game-status');
+    status.textContent = "Ready to Play? You are White. Press Start New Game to begin.";
+    status.classList.add('prestart-note');
+}
 
 // --- Initialization ---
 function init() {
@@ -91,7 +171,9 @@ function setupTabSwitching() {
         learnBtn.classList.remove('active');
         competeView.classList.remove('hidden');
         learnView.classList.add('hidden');
-        if (!game) startCompeteGame();
+        if (!competeStarted) {
+            setPrestartStatus();
+        }
     });
 }
 
@@ -224,13 +306,20 @@ function resetAnimation() {
 // --- Compete Mode Logic ---
 function initCompeteMode() {
     initBoardDOM('svg-board-compete');
+    setPrestartStatus();
     document.getElementById('ai-level').addEventListener('input', (e) => {
-        document.getElementById('level-val').textContent = e.target.value;
+        const level = e.target.value;
+        document.getElementById('level-val').textContent = level;
+        // Update the h2 title to reflect the current level
+        const gameInfoTitle = document.querySelector('.game-info h2');
+        if (gameInfoTitle) {
+            gameInfoTitle.textContent = `vs. Computer (Level ${level})`;
+        }
     });
     document.getElementById('start-game').addEventListener('click', startCompeteGame);
     document.getElementById('undo-move').addEventListener('click', () => {
         if (game) {
-            game.undo(); // Undo AI
+            game.undo(); // Undo Computer
             game.undo(); // Undo Player
             renderGame();
         }
@@ -238,11 +327,16 @@ function initCompeteMode() {
 }
 
 function startCompeteGame() {
+    const status = document.getElementById('game-status');
+    competeStarted = true;
+    status.classList.remove('prestart-note');
+    status.textContent = "Starting game...";
     game = new Chess();
+    selectedSquare = null;
     initBoardDOM('svg-board-compete');
     renderGame();
-    setupClickToMove();
-    document.getElementById('game-status').textContent = "Your turn (White)";
+    setupPointerToMove();
+    status.textContent = "Game started - your turn (White)";
 }
 
 function renderGame() {
@@ -272,17 +366,75 @@ function renderGame() {
     }
 }
 
-function setupClickToMove() {
+function setupPointerToMove() {
     const board = document.getElementById('svg-board-compete');
+    if (board.dataset.pointerBound === 'true') return;
+    board.dataset.pointerBound = 'true';
 
-    board.addEventListener('click', (e) => {
+    let pointerDown = null;
+    let dragGhost = null;
+
+    const clearDragGhost = () => {
+        if (dragGhost) {
+            dragGhost.remove();
+            dragGhost = null;
+        }
+    };
+
+    const updateGhostPosition = (x, y) => {
+        if (!dragGhost) return;
+        dragGhost.style.left = `${x}px`;
+        dragGhost.style.top = `${y}px`;
+    };
+
+    const createDragGhost = (pieceChar, color, x, y) => {
+        const ghost = document.createElement('div');
+        ghost.className = 'piece drag-ghost';
+        ghost.textContent = pieceChar;
+        ghost.style.color = color === 'w' ? '#4f46e5' : '#1e293b';
+        document.body.appendChild(ghost);
+        dragGhost = ghost;
+        updateGhostPosition(x, y);
+    };
+
+    const attemptMove = (targetSq) => {
+        if (!selectedSquare || !targetSq) return;
+
+        const from = selectedSquare.dataset.algebraic;
+        const to = targetSq.dataset.algebraic;
+        if (from === to) return;
+
+        const move = game.move({ from, to, promotion: 'q' });
+        if (move) {
+            clearHighlights();
+            selectedSquare = null;
+            renderGame();
+            checkGameOver();
+            if (!game.game_over()) {
+                    document.getElementById('game-status').textContent = "Computer is thinking...";
+                setTimeout(makeAIMove, 800);
+            }
+        } else {
+            const piece = game.get(to);
+            if (piece && piece.color === 'b') {
+                clearHighlights();
+                selectedSquare = null;
+            }
+        }
+    };
+
+    board.addEventListener('pointerdown', (e) => {
+        if (isAnimating) return;
+        if (game.turn() !== 'w') return;
+
         const sq = e.target.closest('.square');
-        if (!sq || game.turn() !== 'w' || isAnimating) return;
+        if (!sq) return;
+
+        board.setPointerCapture(e.pointerId);
 
         const algebraic = sq.dataset.algebraic;
         const piece = game.get(algebraic);
 
-        // Selection
         if (piece && piece.color === 'w') {
             if (selectedSquare === sq) {
                 clearHighlights();
@@ -293,29 +445,59 @@ function setupClickToMove() {
                 selectedSquare.style.backgroundColor = 'rgba(79, 158, 11, 0.4)';
                 showLegalMoves(algebraic);
             }
-        }
-        // Move
-        else if (selectedSquare) {
-            const from = selectedSquare.dataset.algebraic;
-            const to = algebraic;
 
-            const move = game.move({ from, to, promotion: 'q' });
-
-            if (move) {
-                clearHighlights();
-                selectedSquare = null;
-                renderGame();
-                checkGameOver();
-                if (!game.game_over()) {
-                    document.getElementById('game-status').textContent = "AI is thinking...";
-                    setTimeout(makeAIMove, 800);
-                }
-            } else {
-                clearHighlights();
-                selectedSquare = null;
-            }
+            pointerDown = {
+                id: e.pointerId,
+                x: e.clientX,
+                y: e.clientY,
+                startedOnPiece: true,
+                pieceChar: getPieceChar(piece.type, piece.color),
+                pieceColor: piece.color,
+                moved: false
+            };
+        } else {
+            pointerDown = {
+                id: e.pointerId,
+                x: e.clientX,
+                y: e.clientY,
+                startedOnPiece: false,
+                moved: false
+            };
         }
     });
+
+    board.addEventListener('pointermove', (e) => {
+        if (!pointerDown || pointerDown.id !== e.pointerId) return;
+        const dx = e.clientX - pointerDown.x;
+        const dy = e.clientY - pointerDown.y;
+        if (!pointerDown.moved && Math.hypot(dx, dy) > 4) {
+            pointerDown.moved = true;
+            if (pointerDown.startedOnPiece) {
+                createDragGhost(pointerDown.pieceChar, pointerDown.pieceColor, e.clientX, e.clientY);
+            }
+        }
+        if (pointerDown.moved) updateGhostPosition(e.clientX, e.clientY);
+    });
+
+    const finalizePointer = (e) => {
+        if (!pointerDown || pointerDown.id !== e.pointerId) return;
+
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const targetSq = el ? el.closest('.square') : null;
+
+        if (selectedSquare && targetSq) {
+            attemptMove(targetSq);
+        }
+
+        clearDragGhost();
+        if (board.hasPointerCapture(e.pointerId)) {
+            board.releasePointerCapture(e.pointerId);
+        }
+        pointerDown = null;
+    };
+
+    board.addEventListener('pointerup', finalizePointer);
+    board.addEventListener('pointercancel', finalizePointer);
 }
 
 function showLegalMoves(square) {
@@ -355,8 +537,27 @@ function initStockfish() {
             const line = e.data;
             if (line.indexOf('bestmove') > -1) {
                 const moveStr = line.split(' ')[1];
-                game.move(moveStr, { slug: true });
-                onAIMoveComplete();
+                if (!moveStr || moveStr === '(none)') {
+                    checkGameOver();
+                    return;
+                }
+
+                // Stockfish sends UCI moves (e.g. e7e5), which require sloppy parsing in chess.js 0.10.x.
+                const moved = game.move(moveStr, { sloppy: true });
+                if (moved) {
+                    onAIMoveComplete();
+                    return;
+                }
+
+                // Fallback: if parsing fails for any reason, make a legal move so turns do not get stuck.
+                const legalMoves = game.moves({ verbose: true });
+                if (legalMoves.length > 0) {
+                    const fallbackMove = legalMoves[Math.floor(Math.random() * legalMoves.length)];
+                    game.move(fallbackMove);
+                    onAIMoveComplete();
+                } else {
+                    checkGameOver();
+                }
             }
         };
         stockfish.postMessage('uci');
@@ -370,36 +571,60 @@ function makeAIMove() {
 
     const level = parseInt(document.getElementById('ai-level').value);
 
-    if (level > 5) {
+    if (level >= 8) {
         if (!stockfish) initStockfish();
         stockfish.postMessage(`position fen ${game.fen()}`);
-        stockfish.postMessage(`go depth ${level + 2}`);
+        const depth = level === 8 ? 8 : (level === 9 ? 10 : 12);
+        stockfish.postMessage(`go depth ${depth}`);
         return;
     }
 
     const moves = game.moves({ verbose: true });
-    const safeMoves = moves.filter(m => {
+    if (!moves.length) return;
+
+    const values = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
+    const blunderChanceByLevel = { 1: 0.55, 2: 0.45, 3: 0.35, 4: 0.25, 5: 0.18, 6: 0.12, 7: 0.06 };
+    const noiseByLevel = { 1: 3.2, 2: 2.4, 3: 1.8, 4: 1.2, 5: 0.8, 6: 0.5, 7: 0.3 };
+    const blunderChance = blunderChanceByLevel[level] ?? 0.06;
+    const noise = noiseByLevel[level] ?? 0.3;
+
+    const scoredMoves = moves.map(move => {
         const testGame = new Chess(game.fen());
-        testGame.move(m);
+        testGame.move(move);
         const responses = testGame.moves({ verbose: true });
-        const isVulnerable = responses.some(r => r.to === m.to);
-        return !isVulnerable || m.captured;
+        const vulnerable = responses.some(r => r.to === move.to);
+
+        let score = 0;
+        if (move.captured) score += (values[move.captured] ?? 0) * 2.2;
+        if (move.promotion) score += 8;
+        if (move.flags && (move.flags.includes('k') || move.flags.includes('q'))) score += 0.4;
+        if (testGame.in_check()) score += 1.4;
+        if (vulnerable) score -= (values[move.piece] ?? 0) * 1.6;
+
+        score += (Math.random() * 2 - 1) * noise;
+        return { move, score };
     });
 
-    const candidateMoves = safeMoves.length > 0 ? safeMoves : moves;
-    const capturingMoves = candidateMoves.filter(m => m.captured);
-    let chosenMove;
+    scoredMoves.sort((a, b) => b.score - a.score);
 
-    if (capturingMoves.length > 0) {
-        const values = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
-        capturingMoves.sort((a, b) => values[b.captured] - values[a.captured]);
-        chosenMove = capturingMoves[0];
+    let chosenMove = scoredMoves[0].move;
+    if (Math.random() < blunderChance) {
+        const lowerHalfStart = Math.floor(scoredMoves.length / 2);
+        const lowerHalf = scoredMoves.slice(lowerHalfStart);
+        const randomBlunder = lowerHalf[Math.floor(Math.random() * lowerHalf.length)];
+        if (randomBlunder) chosenMove = randomBlunder.move;
     } else {
-        chosenMove = candidateMoves[Math.floor(Math.random() * candidateMoves.length)];
+        const topPoolSize = Math.max(1, 8 - level);
+        const topPool = scoredMoves.slice(0, topPoolSize);
+        chosenMove = topPool[Math.floor(Math.random() * topPool.length)].move;
     }
 
-    game.move(chosenMove);
-    onAIMoveComplete();
+    const moved = game.move(chosenMove);
+    if (moved) {
+        onAIMoveComplete();
+    } else {
+        checkGameOver();
+    }
 }
 
 function onAIMoveComplete() {
