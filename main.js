@@ -136,11 +136,26 @@ let game = null;
 let stockfish = null;
 let selectedSquare = null;
 let competeStarted = false;
+let promotionCycleIndex = 0;
+const promotionCycle = ['q', 'r', 'b', 'n'];
 
 function setPrestartStatus() {
     const status = document.getElementById('game-status');
     status.textContent = "Ready to Play? You are White. Press Start New Game to begin.";
     status.classList.add('prestart-note');
+}
+
+function getAutoPromotionPiece(from, to) {
+    const movingPiece = game.get(from);
+    if (!movingPiece || movingPiece.type !== 'p') return null;
+
+    const targetRank = to[1];
+    const reachesLastRank =
+        (movingPiece.color === 'w' && targetRank === '8') ||
+        (movingPiece.color === 'b' && targetRank === '1');
+
+    if (!reachesLastRank) return null;
+    return promotionCycle[promotionCycleIndex % promotionCycle.length];
 }
 
 // --- Initialization ---
@@ -329,6 +344,7 @@ function initCompeteMode() {
 function startCompeteGame() {
     const status = document.getElementById('game-status');
     competeStarted = true;
+    promotionCycleIndex = 0;
     status.classList.remove('prestart-note');
     status.textContent = "Starting game...";
     game = new Chess();
@@ -404,8 +420,15 @@ function setupPointerToMove() {
         const to = targetSq.dataset.algebraic;
         if (from === to) return;
 
-        const move = game.move({ from, to, promotion: 'q' });
+        const moveData = { from, to };
+        const autoPromotion = getAutoPromotionPiece(from, to);
+        if (autoPromotion) moveData.promotion = autoPromotion;
+
+        const move = game.move(moveData);
         if (move) {
+            if (move.promotion) {
+                promotionCycleIndex = (promotionCycleIndex + 1) % promotionCycle.length;
+            }
             clearHighlights();
             selectedSquare = null;
             renderGame();

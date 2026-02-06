@@ -60,9 +60,28 @@ header p {
 .strategy-selector {
     margin-top: 1.5rem;
     display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.25rem 0.25rem 0.6rem;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+}
+
+.strategy-selector::-webkit-scrollbar {
+    height: 8px;
+}
+
+.strategy-selector::-webkit-scrollbar-track {
+    background: #eef2ff;
+    border-radius: 999px;
+}
+
+.strategy-selector::-webkit-scrollbar-thumb {
+    background: #c7d2fe;
+    border-radius: 999px;
 }
 
 .strategy-chip {
@@ -74,6 +93,9 @@ header p {
     border-radius: 50px;
     font-weight: 600;
     transition: all 0.2s;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
 }
 
 .strategy-chip.active {
@@ -464,6 +486,11 @@ footer {
     .strategy-chip {
         padding: 0.5rem 0.9rem;
         font-size: 0.92rem;
+    }
+
+    .strategy-selector {
+        gap: 0.5rem;
+        padding-bottom: 0.4rem;
     }
 
     button.primary-btn,
